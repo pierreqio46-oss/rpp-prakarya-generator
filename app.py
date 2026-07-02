@@ -1,142 +1,164 @@
-import os
+import streamlit as st
 from google import genai
 from docx import Document
 from docx.shared import Mm, Pt
-from docx.enum.text import WD_ALIGN_PARAGRAPH
+import io
 
-# 2. Masukkan API Key Anda di bawah ini
-API_KEY = "AQ.Ab8RN6ItIeuU_NQY1rhUaM5f-Sl7GBRH8xdFv-OTpV4jFcMNgQ"
+# Mengatur konfigurasi halaman web
+st.set_page_config(page_title="Generator RPP Prakarya Deep Learning", layout="wide")
 
-def generate_rpp():
-    # Input interaktif untuk pengguna
-    mapel = input("1. Masukkan Mata Pelajaran: ")
-    kelas_fase = input("2. Masukkan Kelas/Fase: ")
-    elemen = input("3. Masukan elemen Eksplorasi dan Observasi, Desain/Perencanaan, Produksi, Evaluasi dan Refleksi: ")
-    sekolah = input("4. masukan nama sekolah: ")
-    penulis = input('5. masukan nama penulis modul: ')
-    topik_bahasan = input("6. Masukkan Topik/Materi Pembelajaran: ")
-    tujuan_pembelajaran = input("7. Masukan Tujuan Pembelajaran: ")
-    waktu = input("8. Masukan berapa pertemuan (contoh: 4): ")
-    kktp = input("9. Masukan KKTP: ")
-    dimensi_profil_lulusan = input("10. masukan dimensi Profil Lulusan: ")
-    praktik_pedagogis = input("11. masukan praktik pedagogis (misal: PBL, PJBL, dan lain-lain): ")
-    lingkungan_pembelajaran = input("12. masukan lingkungan pembelajaran: ")
-    kemitraan_pembelajaran = input("13. masukan kemitraan: ")
-    pemanfaatan_digital = input("14. masukan Pemanfaatan Digital: ")
-    persiapan_pembelajaran = input("15. Masukan persiapan guru: ")
-    kepala_sekolah = input("masukan nama kepala sekolah: ")
-    nip_kepala_sekolah = input("masukan Nip Kepala sekolah: ")
-    nip_penulis = input("Masukan Nip Penulis: ")
+st.title("⛪ Generator RPP / Modul Ajar Katolik")
+st.subheader("Berbasis Pembelajaran Mendalam (Deep Learning) - Multi-Pertemuan")
+st.write("Isi formulir di bawah ini untuk merancang RPP secara otomatis menggunakan AI.")
 
-    client = genai.Client(api_key=API_KEY)
+# --- SIDEBAR INPUT ---
+st.sidebar.header("🔑 Pengaturan API Key")
+api_key = st.sidebar.text_input("Masukkan Google GenAI API Key Anda:", type="password")
 
-    # Modifikasi Prompt agar menghasilkan seluruh pertemuan secara detail
-    prompt_text = f"""
-    Buatkan Rencana Pelaksanaan Pembelajaran (RPP) / Modul Ajar berbasis Pembelajaran Mendalam (Deep Learning) secara LENGKAP untuk {waktu} pertemuan. 
-    Gunakan dokumen di tautan https://drive.google.com/drive/folders/1E8R2MOdiz7vpQzgLtky2wswr5hoc2-Z5?usp=sharing sebagai sumber referensi utama, gunakan pula buku buku elektronik dari kementrian pendidikan yang mendukung 
-    Setiap 1 pertemuan terdiri dari 120 menit. Bagi waktu di setiap pertemuan agar sesuai dengan kegiatan awal, kegiatan inti, dan penutup.
+st.sidebar.header("✍️ Identitas Sekolah & Penulis")
+sekolah = st.sidebar.text_input("Nama Sekolah:", "SMP Negeri 1 Metro")
+kepala_sekolah = st.sidebar.text_input("Nama Kepala Sekolah:", "Fatimah, S.Pd. M.M.")
+nip_kepala_sekolah = st.sidebar.text_input("NIP Kepala Sekolah:", "19670705 199202 2 002")
+penulis = st.sidebar.text_input("Nama Penulis Modul:", "Ingka Rikiana S.Pd")
+nip_penulis = st.sidebar.text_input("NIP Penulis:", "198610252025212029")
+
+# --- FORM UTAMA INPUT ---
+col1, col2 = st.columns(2)
+
+with col1:
+    mapel = st.text_input("Mata Pelajaran:", "Prakarya")
+    kelas_fase = st.text_input("Kelas / Fase:", "Kelas 8 / Fase D")
+    elemen = st.selectbox("Elemen Pembelajaran:", ["Eksplorasi dan Observasi", "Peserta Didik", "Gereja", "Masyarakat"])
+    topik_bahasan = st.text_input("Topik / Pokok Bahasan:", "Pengertian Bahan Pangan Serealia dan Umbi")
+
+with col2:
+    tujuan_pembelajaran = st.text_area("Tujuan Pembelajaran:", "MMengidentifikasi dan mengomunikasikan karakteristik bahan, alat, teknik pengolahan, pengemasan, dan penyajian produk olahan pangan dan atau nonpangan sesuai potensi lingkungan.")
+    kktp = st.text_area("Kriteria Ketercapaian Pembelajaran (KKTP):", "...")
+    waktu = st.number_input("Jumlah Pertemuan (1 Pertemuan = 120 Menit):", min_value=1, max_value=10, value=2)
+
+st.header("⚙️ Parameter Pembelajaran Mendalam")
+col3, col4 = st.columns(2)
+
+with col3:
+    dimensi_profil_lulusan = st.text_input("Dimensi Profil Lulusan:", "Keimanan dan Ketakwaan terhadap Tuhan YME, Penalaran Kritis")
+    praktik_pedagogis = st.text_input("Praktik Pedagogis:", "Diskusi, PBL, PJBL, discovery")
+    lingkungan_pembelajaran = st.text_input("Lingkungan Pembelajaran:", "Ruang Kelas")
+
+with col4:
+    kemitraan_pembelajaran = st.text_input("Kemitraan Pembelajaran:", "pengrajin, pedagag, petani")
+    pemanfaatan_digital = st.text_input("Pemanfaatan Digital:", "Canva for Education, Video, LCD Projector")
+    persiapan_pembelajaran = st.text_area("Persiapan Guru:", "Guru menyiapkan presentasi materi pembelajaran, LKPD")
+
+# --- FUNGSI MERUBAH TEKS MENJADI DOCX DI MEMORI ---
+def buat_file_docx(teks_rpp):
+    doc = Document()
+    # Atur ukuran halaman A4
+    section = doc.sections[0]
+    section.page_width = Mm(210)
+    section.page_height = Mm(297)
     
-    Detail Kelas:
-    - Mata Pelajaran: {mapel}
-    - Kelas/Fase: {kelas_fase}
-    - Elemen: {elemen}
-    - Sekolah: {sekolah}
-    - Penulis: {penulis}
-    - Topik/Pokok Bahasan: {topik_bahasan}
-    - Tujuan Pembelajaran: {tujuan_pembelajaran}
-    - Total Waktu Rencana: {waktu} Pertemuan
-    - Kriteria Ketercapaian Pembelajaran: {kktp}
-    - Dimensi Profil Lulusan: {dimensi_profil_lulusan}
-    - Praktik Pedagogis: {praktik_pedagogis}
-    - Lingkungan Pembelajaran: {lingkungan_pembelajaran}
-    - Kemitraan Pembelajaran: {kemitraan_pembelajaran}
-    - Pemanfaatan Digital: {pemanfaatan_digital}
-    - Persiapan Pembelajaran: {persiapan_pembelajaran}
+    style = doc.styles['Normal']
+    font = style.font
+    font.name = 'Arial'
+    font.size = Pt(11)
     
-    Struktur RPP harus mengikuti susunan berikut:
-    Judul Modul (Satu judul menarik yang merangkum seluruh pertemuan)
-    1. Identitas RPP
-       A. Identifikasi (Dimensi profil lulusan)
-       B. Desain Pembelajaran
+    # Hapus tag HTML dasar agar tidak mengotori Word dokumen
+    bersih_teks = teks_rpp.replace("<p>", "").replace("</p>", "\n").replace("<h1>", "\n\n").replace("</h1>", "\n").replace("<h2>", "\n\n").replace("</h2>", "\n").replace("<h3>", "\n\n").replace("</h3>", "\n")
     
-    2. Langkah Pembelajaran:
-       PENTING: Tuliskan secara detail langkah pembelajaran untuk Pertemuan 1, Pertemuan 2, hingga Pertemuan ke-{waktu}. Jangan disingkat atau digabung! Setiap pertemuan wajib menjabarkan sub-topik yang berkesinambungan serta memuat:
-       - Kegiatan Awal (15 menit: memuat Apersepsi, Motivasi, Asesmen Diagnostik, Tujuan Pembelajaran, Manfaat Pembelajaran)
-       - Kegiatan Inti (90 menit: gunakan tahapan pembelajaran pada praktik pedagogis yang dipilih, perhatikan aspek Meaningful, Eksplorasi Mendalam, dan Diskusi/Kolaborasi)
-       - Kegiatan Akhir (15 menit: berisi kesimpulan dan refleksi, Fokus pada aspek Joyful, Refleksi, dan Apresiasi)
-    
-    3. Asesmen/Penilaian Formatif (Sediakan instrumen penilaian atau refleksi yang spesifik untuk masing-masing pertemuan)
-    4. Lembar Kerja Murid (LKM/LKPD) untuk tiap-tiap pertemuan secara terpisah.
-    5. Asesmen Sumatif (Buat 20 soal pilihan ganda HOTS berbasis materi dari seluruh pertemuan beserta kunci jawabannya di bagian akhir modul).
-    6. Referensi/Daftar Pustaka.
-    
-    Di akhir modul cantumkan tanda tangan format kiri-kanan:
-    Sebelah kiri: Kepala Sekolah: {kepala_sekolah} (NIP: {nip_kepala_sekolah})
-    Sebelah kanan: Penulis: {penulis} (NIP: {nip_penulis})
-    """
+    for baris in bersih_teks.split('\n'):
+        doc.add_paragraph(baris)
+        
+    buffer = io.BytesIO()
+    doc.save(buffer)
+    buffer.seek(0)
+    return buffer
 
-    print(f"\n[Sistem] Sedang merancang RPP Pembelajaran Mendalam untuk {waktu} Pertemuan... Mohon tunggu.\n")
+# --- PROSES GENERATE ---
+if st.button("🚀 Generate RPP / Modul Ajar", type="primary"):
+    if not api_key:
+        st.error("Silakan masukkan API Key Anda di sidebar terlebih dahulu!")
+    else:
+        with st.spinner(f"Sedang merancang RPP untuk {waktu} pertemuan... Mohon tunggu sekitar 15-20 detik."):
+            try:
+                client = genai.Client(api_key=api_key)
+                
+                prompt_text = f"""
+                Buatkan Rencana Pelaksanaan Pembelajaran (RPP) / Modul Ajar berbasis Pembelajaran Mendalam (Deep Learning) secara LENGKAP untuk {waktu} pertemuan. 
+                 Buatkan Rencana Pelaksanaan Pembelajaran (RPP) / Modul Ajar berbasis Pembelajaran Mendalam (Deep Learning) secara LENGKAP untuk {waktu} pertemuan. 
+    Gunakan dokumen di tautan https://drive.google.com/drive/folders/1E8R2MOdiz7vpQzgLtky2wswr5hoc2-Z5?usp=sharing sebagai sumber referensi utama, gunakan pula buku buku elektronik prakarya dari kementrian pendidikan yang mendukung . 
+                Setiap 1 pertemuan terdiri dari 120 menit. Bagi waktu di setiap pertemuan agar sesuai dengan kegiatan awal, kegiatan inti, dan penutup.
+                
+                PENTING: Anda harus menyusun output ini menggunakan format HTML murni yang rapi dan elegan agar langsung siap dicetak di kertas A4.
+                Jangan gunakan markdown biasa (seperti ## atau **). Gunakan tag HTML seperti <h1>, <h2>, <p>, <ul>, <li>, dan <table>.
+                
+                Detail Kelas & Desain:
+                - Sekolah: {sekolah} | Penulis: {penulis}
+                - Mata Pelajaran: {mapel} | Kelas/Fase: {kelas_fase} | Elemen: {elemen}
+                - Topik/Pokok Bahasan: {topik_bahasan} | Tujuan Pembelajaran: {tujuan_pembelajaran}
+                - Total Waktu Rencana: {waktu} Pertemuan | KKTP: {kktp}
+                - Dimensi Profil Lulusan: {dimensi_profil_lulusan} | Praktik Pedagogis: {praktik_pedagogis}
+                - Lingkungan: {lingkungan_pembelajaran} | Kemitraan: {kemitraan_pembelajaran}
+                - Digital: {pemanfaatan_digital} | Persiapan: {persiapan_pembelajaran}
+                
+                Struktur RPP harus mengikuti susunan berikut:
+                - Judul Modul yang menarik di bagian atas.
+                - 1. Identitas RPP & Desain Pembelajaran (Buat rapi di dalam tabel HTML).
+                - 2. Langkah Pembelajaran: Wajib dijabarkan detail satu per satu dari Pertemuan 1 sampai Pertemuan ke-{waktu}. Setiap pertemuan memuat Kegiatan Awal (15 mnt), Kegiatan Inti (90 mnt), Kegiatan Akhir (15 mnt).
+                - 3. Asesmen Formatif & Lembar Kerja Murid (LKM) untuk tiap pertemuan.
+                - 4. Asesmen Sumatif (20 soal pilihan ganda HOTS dan Kunci Jawaban).
+                - 5. Referensi / Daftar Pustaka resmi.
+                
+                Di akhir halaman dokumen, buatlah layout tanda tangan kiri-kanan menggunakan tabel HTML transparan:
+                Sebelah kiri: Mengetahui, Kepala Sekolah {kepala_sekolah} (NIP: {nip_kepala_sekolah})
+                Sebelah kanan: Metro, Penulis {penulis} (NIP: {nip_penulis})
+                """
+                
+                response = client.models.generate_content(
+                    model='gemini-2.5-flash',
+                    contents=prompt_text,
+                )
+                
+                st.session_state['rpp_html'] = response.text
+                st.success("🎉 RPP Berhasil Dibuat!")
+                
+            except Exception as e:
+                st.error(f"Terjadi kesalahan saat menghubungi Gemini API: {e}")
 
-    try:
-        response = client.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=prompt_text,
+# --- TAMPILAN HASIL & TOMBOL AKSI ---
+if 'rpp_html' in st.session_state:
+    st.markdown("---")
+    st.header("📄 Menu Aksi & Pratinjau Dokumen")
+    
+    # Membuat tombol-tombol aksi berdampingan yang berfungsi 100%
+    btn_col1, btn_col2, btn_col3 = st.columns(3)
+    
+    with btn_col1:
+        # Pemicu cetak langsung melalui tombol bawaan Streamlit + instruksi pengguna
+        st.info("💡 **Untuk Cetak ke A4 / Simpan ke PDF:** Tekan kombinasi tombol **Ctrl + P** (Windows) atau **Cmd + P** (Mac) di keyboard Anda saat berada di halaman ini.")
+        
+    with btn_col2:
+        # Tombol download file Microsoft Word (.docx) asli
+        file_docx = buat_file_docx(st.session_state['rpp_html'])
+        st.download_button(
+            label="📥 Unduh File Word (.DOCX)",
+            data=file_docx,
+            file_name=f"RPP_{mapel.replace(' ', '_')}.docx",
+            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         )
         
-        # --- PROSES PEMBUATAN FILE DOCX (WORD) UKURAN A4 ---
-        doc = Document()
-        
-        # Mengatur Ukuran Kertas ke A4 (210mm x 297mm)
-        section = doc.sections[0]
-        section.page_width = Mm(210)
-        section.page_height = Mm(297)
-        section.top_margin = Mm(25)
-        section.bottom_margin = Mm(25)
-        section.left_margin = Mm(25)
-        section.right_margin = Mm(25)
-        
-        # Mengatur Gaya Tulisan Default (Arial, 11pt)
-        style = doc.styles['Normal']
-        font = style.font
-        font.name = 'Arial'
-        font.size = Pt(11)
-        
-        # OPTIMASI: Mengelompokkan teks biasa agar tidak menulis baris-demi-baris secara individu
-        rpp_text = response.text
-        buffer_paragraphs = []
-        
-        for line in rpp_text.split('\n'):
-            if line.startswith('# ') or line.startswith('## ') or line.startswith('### '):
-                # Jika ada teks biasa yang tertunda di buffer, tulis dulu sebelum membuat heading
-                if buffer_paragraphs:
-                    doc.add_paragraph('\n'.join(buffer_paragraphs))
-                    buffer_paragraphs = []
-                
-                # Tambahkan heading sesuai levelnya
-                if line.startswith('# '):
-                    doc.add_heading(line.replace('# ', ''), level=1)
-                elif line.startswith('## '):
-                    doc.add_heading(line.replace('## ', ''), level=2)
-                elif line.startswith('### '):
-                    doc.add_heading(line.replace('### ', ''), level=3)
-            else:
-                buffer_paragraphs.append(line)
-        
-        # Tulis sisa teks yang masih ada di dalam buffer
-        if buffer_paragraphs:
-            doc.add_paragraph('\n'.join(buffer_paragraphs))
-                
-        # Nama file output
-        nama_file = f"RPP_{mapel.replace(' ', '_')}_{waktu}_Pertemuan.docx"
-        doc.save(nama_file)
-        
-        print("--- PROSES SELESAI ---")
-        print(f"[Sistem] Berhasil membuat dokumen Word resmi berukuran A4 berisi {waktu} pertemuan!")
-        print(f"[Sistem] File tersimpan dengan nama: {nama_file}")
-        print("[Sistem] Silakan unduh melalui ikon 'Folder (Files)' di sebelah kiri layar Google Colab Anda.")
-        
-    except Exception as e:
-        print(f"Terjadi kesalahan: {e}")
-
-# Menjalankan fungsi generator
-generate_rpp()
+    with btn_col3:
+        # Menyediakan alternatif salin teks HTML murni untuk aplikasi eksternal
+        st.download_button(
+            label="🌐 Unduh File Kode HTML Resmi",
+            data=st.session_state['rpp_html'],
+            file_name=f"RPP_{mapel.replace(' ', '_')}.html",
+            mime="text/html"
+        )
+    
+    # Tampilkan halaman cetak yang bersih
+    html_content = f"""
+    <div style="padding: 30px; border: 1px solid #ccc; background-color: white; color: black; font-family: Arial, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto;">
+        {st.session_state['rpp_html']}
+    </div>
+    """
+    st.markdown(html_content, unsafe_allow_html=True)
