@@ -1,5 +1,5 @@
-# 1. Menginstal library yang dibutuhkan
-!pip install -q google-genai python-docx
+# 1. Pastikan library sudah diinstal di terminal sebelum menjalankan skrip ini
+# (Jalankan: pip install google-genai python-docx di terminal)
 
 import os
 from google import genai
