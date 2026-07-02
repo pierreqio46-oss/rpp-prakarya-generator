@@ -36,7 +36,7 @@ def generate_rpp():
     # Modifikasi Prompt agar menghasilkan seluruh pertemuan secara detail
     prompt_text = f"""
     Buatkan Rencana Pelaksanaan Pembelajaran (RPP) / Modul Ajar berbasis Pembelajaran Mendalam (Deep Learning) secara LENGKAP untuk {waktu} pertemuan. 
-    Gunakan dokumen di tautan https://drive.google.com/drive/folders/1E8R2MOdiz7vpQzgLtky2wswr5hoc2-Z5?usp=sharing sebagai sumber referensi utama 
+    Gunakan dokumen di tautan https://drive.google.com/drive/folders/1E8R2MOdiz7vpQzgLtky2wswr5hoc2-Z5?usp=sharing sebagai sumber referensi utama, gunakan pula buku buku elektronik dari kementrian pendidikan yang mendukung 
     Setiap 1 pertemuan terdiri dari 120 menit. Bagi waktu di setiap pertemuan agar sesuai dengan kegiatan awal, kegiatan inti, dan penutup.
     
     Detail Kelas:
