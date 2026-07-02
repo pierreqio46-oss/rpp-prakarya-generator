@@ -7,7 +7,7 @@ import io
 # Mengatur konfigurasi halaman web
 st.set_page_config(page_title="Generator RPP Prakarya Deep Learning", layout="wide")
 
-st.title("⛪ Generator RPP / Modul Ajar Katolik")
+st.title("⛪ Generator RPP / Modul Ajar Prakarya")
 st.subheader("Berbasis Pembelajaran Mendalam (Deep Learning) - Multi-Pertemuan")
 st.write("Isi formulir di bawah ini untuk merancang RPP secara otomatis menggunakan AI.")
 
