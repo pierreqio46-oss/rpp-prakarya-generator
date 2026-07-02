@@ -1,6 +1,3 @@
-# 1. Pastikan library sudah diinstal di terminal sebelum menjalankan skrip ini
-# (Jalankan: pip install google-genai python-docx di terminal)
-
 import os
 from google import genai
 from docx import Document
@@ -104,17 +101,30 @@ def generate_rpp():
         font.name = 'Arial'
         font.size = Pt(11)
         
-        # Memasukkan hasil AI ke dalam dokumen Word baris demi baris
+        # OPTIMASI: Mengelompokkan teks biasa agar tidak menulis baris-demi-baris secara individu
         rpp_text = response.text
+        buffer_paragraphs = []
+        
         for line in rpp_text.split('\n'):
-            if line.startswith('# '):
-                p = doc.add_heading(line.replace('# ', ''), level=1)
-            elif line.startswith('## '):
-                p = doc.add_heading(line.replace('## ', ''), level=2)
-            elif line.startswith('### '):
-                p = doc.add_heading(line.replace('### ', ''), level=3)
+            if line.startswith('# ') or line.startswith('## ') or line.startswith('### '):
+                # Jika ada teks biasa yang tertunda di buffer, tulis dulu sebelum membuat heading
+                if buffer_paragraphs:
+                    doc.add_paragraph('\n'.join(buffer_paragraphs))
+                    buffer_paragraphs = []
+                
+                # Tambahkan heading sesuai levelnya
+                if line.startswith('# '):
+                    doc.add_heading(line.replace('# ', ''), level=1)
+                elif line.startswith('## '):
+                    doc.add_heading(line.replace('## ', ''), level=2)
+                elif line.startswith('### '):
+                    doc.add_heading(line.replace('### ', ''), level=3)
             else:
-                p = doc.add_paragraph(line)
+                buffer_paragraphs.append(line)
+        
+        # Tulis sisa teks yang masih ada di dalam buffer
+        if buffer_paragraphs:
+            doc.add_paragraph('\n'.join(buffer_paragraphs))
                 
         # Nama file output
         nama_file = f"RPP_{mapel.replace(' ', '_')}_{waktu}_Pertemuan.docx"
