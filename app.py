@@ -40,8 +40,28 @@ st.header("⚙️ Parameter Pembelajaran Mendalam")
 col3, col4 = st.columns(2)
 
 with col3:
-    dimensi_profil_lulusan = st.text_input("Dimensi Profil Lulusan:", "Keimanan dan Ketakwaan terhadap Tuhan YME, Penalaran Kritis")
-    praktik_pedagogis = st.text_input("Praktik Pedagogis:", "Diskusi, PBL, PJBL, discovery")
+    # --- PERUBAHAN DI SINI: Menggunakan st.multiselect untuk 8 Profil Dimensi Lulusan ---
+    opsi_dimensi = [
+        "Keimanan dan Ketakwaan terhadap Tuhan YME",
+        "Kewargaan",
+        "Penalaran Kritis",
+        "Kreativitas",
+        "Kolaborasi",
+        "Kemandirian",
+        "Kesehatan",
+        "Komunikasi"
+    ]
+    
+    dimensi_terpilih = st.multiselect(
+        "Dimensi Profil Lulusan (Bisa Pilih Lebih dari 1):",
+        options=opsi_dimensi,
+        default=["Keimanan dan Ketakwaan terhadap Tuhan YME", "Penalaran Kritis"]
+    )
+    
+    # Menggabungkan hasil list multiselect menjadi satu string yang dipisahkan koma
+    dimensi_profil_lulusan = ", ".join(dimensi_terpilih) if dimensi_terpilih else "Tidak ada dimensi yang dipilih"
+
+    praktik_pedagogis = st.text_input("Praktik Pedagogis:", "Diskusi, Kateketis")
     lingkungan_pembelajaran = st.text_input("Lingkungan Pembelajaran:", "Ruang Kelas")
 
 with col4:
