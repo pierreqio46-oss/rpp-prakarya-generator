@@ -105,7 +105,7 @@ if st.button("🚀 Generate RPP / Modul Ajar", type="primary"):
                 prompt_text = f"""
                 Saya adalah seorang guru mata pelajaran Prakarya jenjang SMP. Buatkan Rencana Pelaksanaan Pembelajaran (RPP) / Modul Ajar berbasis Pembelajaran Mendalam (Deep Learning) secara LENGKAP untuk {waktu} pertemuan. 
                  Buatkan Rencana Pelaksanaan Pembelajaran (RPP) / Modul Ajar berbasis Pembelajaran Mendalam (Deep Learning) secara LENGKAP untuk {waktu} pertemuan. 
-    Gunakan dokumen di tautan https://drive.google.com/drive/folders/1E8R2MOdiz7vpQzgLtky2wswr5hoc2-Z5?usp=sharing sebagai sumber referensi utama, gunakan pula buku buku elektronik prakarya dari kementrian pendidikan yang mendukung . 
+    Gunakan dokumen di tautan: https://drive.google.com/drive/folders/1E8R2MOdiz7vpQzgLtky2wswr5hoc2-Z5?usp=sharing sebagai sumber referensi utama, gunakan pula buku buku elektronik prakarya dari kementrian pendidikan yang mendukung . 
                 Setiap 1 pertemuan terdiri dari 120 menit. Bagi waktu di setiap pertemuan agar sesuai dengan kegiatan awal, kegiatan inti, dan penutup.
                 
                 PENTING: Anda harus menyusun output ini menggunakan format HTML murni yang rapi dan elegan agar langsung siap dicetak di kertas A4.
