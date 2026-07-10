@@ -28,7 +28,7 @@ col1, col2 = st.columns(2)
 with col1:
     mapel = st.text_input("Mata Pelajaran:", "Prakarya")
     kelas_fase = st.text_input("Kelas / Fase:", "Kelas 8 / Fase D")
-    elemen = st.selectbox("Elemen Pembelajaran:", ["Eksplorasi dan Observasi", "Peserta Didik", "Gereja", "Masyarakat"])
+    elemen = st.selectbox("Elemen Pembelajaran:", ["Eksplorasi dan Observasi", "Desain/Perencanaan", "Produksi", "Evaluasi dan Refleksi"])
     topik_bahasan = st.text_input("Topik / Pokok Bahasan:", "Pengertian Bahan Pangan Serealia dan Umbi")
 
 with col2:
