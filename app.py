@@ -32,7 +32,7 @@ with col1:
     topik_bahasan = st.text_input("Topik / Pokok Bahasan:", "Pengertian Bahan Pangan Serealia dan Umbi")
 
 with col2:
-    tujuan_pembelajaran = st.text_area("Tujuan Pembelajaran:", "MMengidentifikasi dan mengomunikasikan karakteristik bahan, alat, teknik pengolahan, pengemasan, dan penyajian produk olahan pangan dan atau nonpangan sesuai potensi lingkungan.")
+    tujuan_pembelajaran = st.text_area("Tujuan Pembelajaran:", "Mengidentifikasi dan mengomunikasikan karakteristik bahan, alat, teknik pengolahan, pengemasan, dan penyajian produk olahan pangan dan atau nonpangan sesuai potensi lingkungan.")
     kktp = st.text_area("Kriteria Ketercapaian Pembelajaran (KKTP):", "...")
     waktu = st.number_input("Jumlah Pertemuan (1 Pertemuan = 120 Menit):", min_value=1, max_value=10, value=2)
 
@@ -61,13 +61,13 @@ with col3:
     # Menggabungkan hasil list multiselect menjadi satu string yang dipisahkan koma
     dimensi_profil_lulusan = ", ".join(dimensi_terpilih) if dimensi_terpilih else "Tidak ada dimensi yang dipilih"
 
-    praktik_pedagogis = st.text_input("Praktik Pedagogis:", "Diskusi, Kateketis")
+    praktik_pedagogis = st.text_input("Praktik Pedagogis:", "Diskusi, discovey")
     lingkungan_pembelajaran = st.text_input("Lingkungan Pembelajaran:", "Ruang Kelas")
 
 with col4:
     kemitraan_pembelajaran = st.text_input("Kemitraan Pembelajaran:", "pengrajin, pedagag, petani")
     pemanfaatan_digital = st.text_input("Pemanfaatan Digital:", "Canva for Education, Video, LCD Projector")
-    persiapan_pembelajaran = st.text_area("Persiapan Guru:", "Guru menyiapkan presentasi materi pembelajaran, LKPD")
+    persiapan_pembelajaran = st.text_area("Persiapan Guru:", "Guru menyiapkan presentasi materi pembelajaran, LKM")
 
 # --- FUNGSI MERUBAH TEKS MENJADI DOCX DI MEMORI ---
 def buat_file_docx(teks_rpp):
@@ -122,7 +122,7 @@ if st.button("🚀 Generate RPP / Modul Ajar", type="primary"):
                 
                 Struktur RPP harus mengikuti susunan berikut:
                 - Judul Modul yang menarik di bagian atas.
-                - 1. Identitas modul memuat: mapel, Kelas/Fase, elemen, Sekolah, Penulis, topik/Pokok Bahasan, Tujuan Pembelajaran, Kriteria Ketercapaian Pembelajaran, Dimensi profil lulusan, Alokasi Waktu (Buat rapi di dalam tabel HTML)
+                - 1. Identitas modul memuat: mapel, Kelas/Fase, elemen, Sekolah, Penulis, topik/Pokok Bahasan, Tujuan Pembelajaran, Kriteria Ketercapaian Pembelajaran, Dimensi profil lulusan (jangan gunakan rumusan Dimensi Profil Pelajar Pancasila, gunakan rumusan Dimensi profil lulusan), Alokasi Waktu (Buat rapi di dalam tabel HTML)
                 - 2. Desain Pembelajaran memuat: Tujuan pembelajaran, Kriteria ketercapaian pembelajaran, Praktik pedagogis, Lingkungan Pembelajaran, Kemitraan Pembelajaran, Pemanfaatan Digital, Persiapan Pembelajaran dan Tahapan Pembelajaran: Tentukan dibagian pembelajaran mana yang merupakan tahapan pembaelajaran mendalam tentang Memahami (Understanding) Mengaplikasi (Applying)dan Merefleksi (Reflecting) (Buat rapi di dalam tabel HTML).
                 - 3. Langkah Pembelajaran: Wajib dijabarkan detail satu per satu dari Pertemuan 1 sampai Pertemuan ke-{waktu}. Setiap pertemuan memuat Kegiatan Awal (15 menit: memuat Apersepsi, Motivasi, Asesmen Diagnostik, Tujuan Pembelajaran, Manfaat Pembelajaran), Kegiatan Inti (90 menit: gunakan tahapan atau sintak pembelajaran pada praktik pedagogis yang dipilih, perhatikan aspek Meaningful, Eksplorasi Mendalam, dan Diskusi/Kolaborasi), Kegiatan Akhir (15 menit: berisi rangkuman atau kesimpulan pembelajaran dan refleksi, Fokus pada aspek Joyful, Refleksi, dan Apresiasi).
                 - 4. Asesmen Formatif & Lembar Kerja Murid (LKM) untuk tiap pertemuan.
